@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deployment
+  labels:
+  {{- include "movies-service.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.appDeployment.replicas }}
+  selector:
+    matchLabels:
+      app: movies-service
+    {{- include "movies-service.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: movies-service
+        version: v1
+      {{- include "movies-service.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/path: /api/actuator/prometheus
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+      - env:
+        - name: environment
+          value: general-movies
+        - name: TMDB_API_KEY
+          valueFrom:
+            secretKeyRef:
+              key: app.security.tmdb.key
+              name: {{ .Release.Name }}-secrets
+        - name: management.endpoints.web.exposure.include
+          valueFrom:
+            configMapKeyRef:
+              key: management.endpoints.web.exposure.include
+              name: {{ .Release.Name }}-config
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.appDeployment.moviesApp.image.repository }}:{{ .Values.appDeployment.moviesApp.image.tag
+          | default .Chart.AppVersion }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/actuator/health/liveness
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: movies-service
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/actuator/health/readiness
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}

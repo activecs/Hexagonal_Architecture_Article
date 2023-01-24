@@ -1,0 +1,14 @@
+deployment:
+  moviesFrontend:
+    image:
+      repository: localhost:5000/moviesbff
+      tag: latest
+  replicas: 2
+kubernetesClusterDomain: cluster.local
+service:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  type: ClusterIP

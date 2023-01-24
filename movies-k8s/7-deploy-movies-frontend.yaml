@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: movies-frontend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: movies-frontend
+  template:
+    metadata:
+      labels:
+        app: movies-frontend
+        version: v1
+    spec:
+      containers:
+      - name: movies-frontend
+        image: localhost:5001/movies-frontend:latest
+        ports:
+        - containerPort: 8050
+        env:
+          - name: environment
+            value: general-movies
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moviesfrontend
+spec:
+  type: ClusterIP
+  selector:
+    app: movies-frontend
+  ports:
+    - name: http
+      port: 8050
+      targetPort: 8050
+      protocol: TCP
+

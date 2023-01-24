@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+  {{- include "movies-service.labels" . | nindent 4 }}
+data:
+  environment: {{ .Values.config.environment | quote }}
+  management.endpoints.web.exposure.include: {{ .Values.config.managementEndpointsWebExposureInclude | quote }}

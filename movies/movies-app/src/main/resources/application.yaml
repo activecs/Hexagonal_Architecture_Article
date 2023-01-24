@@ -1,8 +1,0 @@
-server:
-  servlet:
-    context-path: /api
-
-app:
-  security:
-    tmdb:
-      key: ${TMDB_API_KEY}

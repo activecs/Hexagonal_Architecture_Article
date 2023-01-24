@@ -9,8 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="movies-app" />
         <module name="movies-domain" />
-        <module name="movies-infra-api" />
         <module name="movies-common" />
+        <module name="movies-infra-api" />
         <module name="movies-test-report" />
       </profile>
     </annotationProcessing>
@@ -20,6 +20,7 @@
       <module name="movies-common" target="17" />
       <module name="movies-domain" target="17" />
       <module name="movies-infra-api" target="17" />
+      <module name="movies-parent" target="17" />
       <module name="movies-test-report" target="17" />
     </bytecodeTargetLevel>
   </component>

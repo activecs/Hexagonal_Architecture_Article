@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: moviesfrontend
+server:
+  port: ${APP_PORT:8080}
+
+services:
+    movies:
+      url: http://${SERVICE_URL_MOVIES:moviesservice}
+      port: ${SERVICE_PORT_MOVIES:8080}
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    livenessState:
+      enabled: true
+    readinessState:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: "*"

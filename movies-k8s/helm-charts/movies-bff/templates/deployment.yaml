@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "movies-bff.fullname" . }}-deployment
+  labels:
+  {{- include "movies-bff.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: movies-bff
+    {{- include "movies-bff.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: movies-bff
+        version: v1
+      {{- include "movies-bff.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
+        prometheus.io/scrape: "true"
+    spec:
+      containers:
+      - env:
+        - name: environment
+          value: general-movies
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.deployment.moviesFrontend.image.repository }}:{{ .Values.deployment.moviesFrontend.image.tag
+          | default .Chart.AppVersion }}
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health/liveness
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: movies-bff
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8080
+            scheme: HTTP
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources: {}

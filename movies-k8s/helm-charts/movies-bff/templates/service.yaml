@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "movies-bff.fullname" . }}
+  labels:
+  {{- include "movies-bff.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: movies-bff
+  {{- include "movies-bff.selectorLabels" . | nindent 4 }}
+  ports:
+	{{- .Values.service.ports | toYaml | nindent 2 -}}

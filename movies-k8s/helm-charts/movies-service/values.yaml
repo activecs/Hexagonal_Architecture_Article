@@ -1,0 +1,19 @@
+appDeployment:
+  moviesApp:
+    image:
+      repository: localhost:5001/moviesservice
+      tag: latest
+  replicas: 2
+appService:
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  type: ClusterIP
+config:
+  environment: local-movies
+  managementEndpointsWebExposureInclude: "*"
+kubernetesClusterDomain: cluster.local
+secrets:
+  appSecurityTmdbKey: "e47570364cc8ce40dffb5b785097decf"

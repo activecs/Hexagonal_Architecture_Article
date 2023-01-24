@@ -1,0 +1,71 @@
+<html>
+<head>
+    <title>Guestbook</title>
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"/>
+    <meta charset="utf-8"></meta>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <style>
+      body { padding-top: 80px; }
+      form span { font-weight: bold; padding-right: 1em; display: block; }
+      form input[type="submit"] { display: block; margin-top: 1em; }
+      .greeting { padding-bottom: 0.5em; }
+      .messages { border-top: 1px solid black }
+      .message { display: block; }
+      .message span { padding-top: 0.5em; }
+      .message .username { font-weight: bold; width: 100px; float: left;}
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Movie Trends</a>
+        </div>
+    </div>
+</nav>
+
+<div class="main container">
+    <div class="greeting">
+        <span>{{greeting}}</span>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Movie Trends</h1>
+            <p>Here are the top 10 movies of the week:</p>
+            {{#popular}}
+                <div class="movie">
+                    <h2>{{title}}</h2>
+                    <p>{{synopsys}}</p>
+                    <p>Release date: {{releaseDate}}</p>
+                    <p>Rating: {{rate}}</p>
+                    <p>{{#actors}} {{name}} {{firstName}}  {{/actors}}</p>
+                </div>
+            {{/popular}}
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Movie New</h1>
+            <p>Here are the upcoming 10 movies of the week:</p>
+            {{#upcoming}}
+            <div class="movie">
+                <h2>{{title}}</h2>
+                <p>{{synopsys}}</p>
+                <p>Release date: {{releaseDate}}</p>
+                <p>Rating: {{rate}}</p>
+                <p>{{#actors}} {{name}} {{firstName}}  {{/actors}}</p>
+            </div>
+            {{/upcoming}}
+        </div>
+    </div>
+
+</div>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+</body>
+</html>
+
