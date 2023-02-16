@@ -1,23 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-frontend-deployment
+  name: moviesfrontend
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: movies-frontend
+      app: moviesfrontend
   template:
     metadata:
       labels:
-        app: movies-frontend
+        app: moviesfrontend
         version: v1
     spec:
       containers:
-      - name: movies-frontend
-        image: localhost:5001/movies-frontend:latest
+      - name: moviesfrontend
+        image: eder/moviesfrontend:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8050
+        - containerPort: 80
         env:
           - name: environment
             value: general-movies
@@ -29,10 +30,32 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: movies-frontend
+    app: moviesfrontend
   ports:
     - name: http
-      port: 8050
-      targetPort: 8050
+      port: 80
+      targetPort: 80
       protocol: TCP
-
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: moviesfrontend
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: moviesfrontend
+      http:
+        paths:
+          - path: /()(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: moviesfrontend
+                port:
+                  number: 80

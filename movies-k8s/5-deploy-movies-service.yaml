@@ -17,7 +17,7 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-service-deployment
+  name: movies-service
   labels:
     app: movies-service
 spec:
@@ -37,7 +37,8 @@ spec:
     spec:
       containers:
       - name: movies-service
-        image: localhost:5001/movies-service:latest
+        image: eder/moviesservice:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         env:
@@ -75,7 +76,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: movies-service-srv
+  name: movies-service
 spec:
   type: ClusterIP
   selector:

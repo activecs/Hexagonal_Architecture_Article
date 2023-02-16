@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-bff-deployment
+  name: movies-bff
 spec:
   replicas: 2
   selector:
@@ -19,7 +19,8 @@ spec:
     spec:
       containers:
       - name: movies-bff
-        image: 192.168.49.2:5000/movies-bff:latest
+        image: eder/moviesbff:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         env:
@@ -47,7 +48,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: movies-bff-service
+  name: movies-bff
 spec:
   type: ClusterIP
   selector:
