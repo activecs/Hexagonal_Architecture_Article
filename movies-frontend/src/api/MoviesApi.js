@@ -1,8 +1,8 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_GATEWAY_SERVER_URI,
-  timeout: 2000,
+  baseURL: import.meta.env.VITE_API_ENDPOINT,
+  timeout: import.meta.env.VITE_API_TIMEOUT,
 });
 
 const MoviesApi = (auth) => {
@@ -23,6 +23,7 @@ const MoviesApi = (auth) => {
 
   return {
     getPopular() {
+      console.log(`getPopular base url: ${import.meta.env.VITE_API_ENDPOINT}`);
       return axiosInstance.get("/popular", {
         transformResponse: [
           function (data) {

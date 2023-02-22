@@ -4,11 +4,11 @@ spring:
 server:
   servlet:
     context-path: /api
-  port: ${APP_PORT:8080}
+  port: ${APP_PORT:8888}
 app:
   security:
     tmdb:
-      key: ${TMDB_API_KEY}
+      key: ${TMDB_API_KEY:e47570364cc8ce40dffb5b785097decf}
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"

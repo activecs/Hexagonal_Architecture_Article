@@ -21,6 +21,7 @@ minikube addons enable ingress
 #minikube addons enable ingress-dns
 #kubectl port-forward --namespace kube-system service/registry 5000:80 
 #kubectl port-forward --namespace default service/moviesfrontend 8050:8050
+#kubectl port-forward --namespace default service/moviesservice 8888:80
 ```
 ## 1.2 Prerequisites: Install HELM
 ```bash
@@ -40,7 +41,10 @@ echo "$(minikube ip) moviesfrontend" | sudo tee -a /etc/hosts
 ```
 ## 2.2 Deploy to K8s manually
 ```bash
-kubectl apply -f 3-namespace.yaml
+kubectl delete -f 5-deploy-movies-service.yaml
+kubectl delete -f 6-deploy-movies-bff.yaml
+kubectl delete -f 7-deploy-movies-frontend.yaml
+
 kubectl apply -f 5-deploy-movies-service.yaml
 kubectl apply -f 6-deploy-movies-bff.yaml
 kubectl apply -f 7-deploy-movies-frontend.yaml

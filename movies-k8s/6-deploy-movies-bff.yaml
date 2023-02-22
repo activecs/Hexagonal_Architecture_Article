@@ -1,61 +1,87 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moviesbff
+data:
+  environment: local-movies
+  services.app.port: "80"
+  services.url.movies: "http://moviesservice"
+  services.port.movies: "80"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-bff
+  name: moviesbff
+  labels:
+    app: moviesbff
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: movies-bff
+      app: moviesbff
   template:
     metadata:
       annotations:
         prometheus.io/path: /actuator/prometheus
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
+        prometheus.io/port: "80"
       labels:
-        app: movies-bff
+        app: moviesbff
         version: v1
     spec:
       containers:
-      - name: movies-bff
-        image: eder/moviesbff:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 8080
-        env:
-          - name: environment
-            value: general-movies
-        livenessProbe:
-          httpGet:
-            path: "/actuator/health/liveness"
-            port: 8080
-            scheme: HTTP
-          timeoutSeconds: 1
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: "/actuator/health/readiness"
-            port: 8080
-            scheme: HTTP
-          timeoutSeconds: 1
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
+        - name: movies-bff
+          image: eder/moviesbff:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: environment
+              value: general-movies
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesbff
+                  key: services.app.port
+            - name: SERVICES_URL_MOVIES
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesbff
+                  key: services.url.movies
+            - name: SERVICES_PORT_MOVIES
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesbff
+                  key: services.port.movies
+          livenessProbe:
+            httpGet:
+              path: "/actuator/health/liveness"
+              port: 80
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: "/actuator/health/readiness"
+              port: 80
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: movies-bff
+  name: moviesbff
 spec:
   type: ClusterIP
   selector:
-    app: movies-bff
+    app: moviesbff
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 80
       protocol: TCP
 

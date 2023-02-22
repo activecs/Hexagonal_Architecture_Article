@@ -6,8 +6,8 @@ server:
 
 services:
     movies:
-      url: http://${SERVICE_URL_MOVIES:moviesservice}
-      port: ${SERVICE_PORT_MOVIES:8080}
+      url: ${SERVICES_URL_MOVIES:http://moviesservice}
+      port: ${SERVICES_PORT_MOVIES:80}
 management:
   endpoint:
     health:

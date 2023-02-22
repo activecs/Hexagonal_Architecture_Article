@@ -12,11 +12,11 @@ RUN mvn -B -e -C -T 1C org.apache.maven.plugins:maven-dependency-plugin:3.5.0:go
 
 COPY . .
 
-RUN mvn clean install -Dmaven.test.skip=true
-RUN mvn -f movies-app/pom.xml clean package -Dmaven.test.skip=true
+RUN mvn clean install -Dmaven.test.skip=true -Pskip-mutation-tests
+RUN mvn -f movies-app/pom.xml clean package -Dmaven.test.skip=true -Pskip-mutation-tests
 
 FROM amazoncorretto:17-alpine-jdk as production
 VOLUME /tmp
+EXPOSE 80
 COPY --from=build /workspace/movies-app/target/movies-app-*.jar app.jar
-EXPOSE 8080
 ENTRYPOINT ["java","-jar", "app.jar"]

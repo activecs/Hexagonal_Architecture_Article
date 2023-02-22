@@ -1,15 +1,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: movies-config
+  name: moviesservice
 data:
   environment: local-movies
   management.endpoints.web.exposure.include: "*"
+  services.app.port: "80"
 ---
 apiVersion: v1
 kind: Secret
 metadata:
-  name: movies-secrets
+  name: moviesservice
 type: Opaque
 data:
   app.security.tmdb.key: ZTQ3NTcwMzY0Y2M4Y2U0MGRmZmI1Yjc4NTA5N2RlY2Y=
@@ -17,72 +18,77 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: movies-service
+  name: moviesservice
   labels:
-    app: movies-service
+    app: moviesservice
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: movies-service
+      app: moviesservice
   template:
     metadata:
       annotations:
         prometheus.io/path: /api/actuator/prometheus
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8080"
+        prometheus.io/port: "80"
       labels:
-        app: movies-service
+        app: moviesservice
         version: v1
     spec:
       containers:
-      - name: movies-service
-        image: eder/moviesservice:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 8080
-        env:
-          - name: environment
-            value: general-movies
-          - name: TMDB_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: movies-secrets
-                key: app.security.tmdb.key
-          - name: management.endpoints.web.exposure.include
-            valueFrom:
-              configMapKeyRef:
-                name: movies-config
-                key: management.endpoints.web.exposure.include
-        livenessProbe:
-          httpGet:
-            path: "/api/actuator/health/liveness"
-            port: 8080
-            scheme: HTTP
-          timeoutSeconds: 1
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: "/api/actuator/health/readiness"
-            port: 8080
-            scheme: HTTP
-          timeoutSeconds: 1
-          periodSeconds: 10
-          successThreshold: 1
-          failureThreshold: 3
+        - name: moviesservice
+          image: eder/moviesservice:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: environment
+              value: general-movies
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesservice
+                  key: services.app.port
+            - name: TMDB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: moviesservice
+                  key: app.security.tmdb.key
+            - name: management.endpoints.web.exposure.include
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesservice
+                  key: management.endpoints.web.exposure.include
+          livenessProbe:
+            httpGet:
+              path: "/api/actuator/health/liveness"
+              port: 80
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: "/api/actuator/health/readiness"
+              port: 80
+              scheme: HTTP
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: movies-service
+  name: moviesservice
 spec:
   type: ClusterIP
   selector:
-    app: movies-service
+    app: moviesservice
   ports:
     - name: http
-      port: 8080
-      targetPort: 8080
+      port: 80
+      targetPort: 80
       protocol: TCP

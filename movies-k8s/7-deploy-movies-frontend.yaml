@@ -1,9 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: moviesfrontend
+data:
+  environment: local-movies
+  service.app.port: "80"
+  services.url.moviesbff: "http://moviesfrontend/bff"
+  services.timeout.moviesbff: "12000"
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: moviesfrontend
+  labels:
+    app: moviesfrontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: moviesfrontend
@@ -14,14 +26,30 @@ spec:
         version: v1
     spec:
       containers:
-      - name: moviesfrontend
-        image: eder/moviesfrontend:latest
-        imagePullPolicy: IfNotPresent
-        ports:
-        - containerPort: 80
-        env:
-          - name: environment
-            value: general-movies
+        - name: moviesfrontend
+          image: eder/moviesfrontend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: environment
+              value: general-movies
+            - name: APP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesfrontend
+                  key: service.app.port
+            - name: VITE_API_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesfrontend
+                  key: services.url.moviesbff
+            - name: VITE_API_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  name: moviesfrontend
+                  key: services.timeout.moviesbff
+
 ---
 apiVersion: v1
 kind: Service
@@ -52,6 +80,13 @@ spec:
     - host: moviesfrontend
       http:
         paths:
+          - path: /bff(/|$)(.*)
+            pathType: Prefix
+            backend:
+              service:
+                name: moviesbff
+                port:
+                  number: 80
           - path: /()(.*)
             pathType: Prefix
             backend:
