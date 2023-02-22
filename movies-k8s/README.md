@@ -14,11 +14,7 @@ minikube addons enable ingress
 #minikube ip
 #minikube addons list
 #minikube dashboard --url
-#minikube addons enable registry
-#minikube addons enable registry-aliases
 #watch minikube ssh -- cat /etc/hosts 
-#minikube config set insecure-registry "192.168.49.0/24"
-#minikube addons enable ingress-dns
 #kubectl port-forward --namespace kube-system service/registry 5000:80 
 #kubectl port-forward --namespace default service/moviesfrontend 8050:8050
 #kubectl port-forward --namespace default service/moviesservice 8888:80
@@ -35,20 +31,69 @@ echo "$(minikube ip) moviesfrontend" | sudo tee -a /etc/hosts
 ```
 
 # 2 Deployment
-## 2.1 Create Docker image
+## 2.1 Create and deploy Docker images
 ```bash
 ./build-docker-image.sh
 ```
-## 2.2 Deploy to K8s manually
+OR
 ```bash
 kubectl delete -f 5-deploy-movies-service.yaml
 kubectl delete -f 6-deploy-movies-bff.yaml
 kubectl delete -f 7-deploy-movies-frontend.yaml
 
+sleep 5
+
+(echo "build movies-service" && cd ../movies-service && /bin/bash build-docker-image.sh ) &
+(echo "build movies-bff" && cd ../movies-bff && /bin/bash build-docker-image.sh ) &
+(echo "build movies-frontend" && cd ../movies-frontend && /bin/bash build-docker-image.sh) &
+wait
+
 kubectl apply -f 5-deploy-movies-service.yaml
 kubectl apply -f 6-deploy-movies-bff.yaml
 kubectl apply -f 7-deploy-movies-frontend.yaml
 ```
+
+## 2.3 Deploy Prometheus + Grafana
+```bash
+# Add the prometheus-community and graphana Helm repository
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+
+# Install prometheus
+helm install prometheus prometheus-community/prometheus
+# expose prometheus-service:9090 via NodePort
+kubectl expose service prometheus-server --type=NodePort --target-port=9090 --name=prometheus-server-np
+minikube service prometheus-server-np
+
+# Install grafana
+helm install grafana grafana/grafana
+# get admin password
+kubectl get secret --namespace default grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+# expose grafana-service:3000 via NodePort
+kubectl expose service grafana --type=NodePort --target-port=3000 --name=grafana-np
+minikube service grafana-np
+```
+Manual steps: (https://brain2life.hashnode.dev/prometheus-and-grafana-setup-in-minikube)
+```bash
+Create datasource from prometheus-server:8000
+Import 6417 community Dashboard
+```
+
+# 4.1 Access the application
+```bash
+# http://moviesfrontend
+```
+
+
+# TODO:
+- connect and collect metrics moviesservices, moviesbff in prometheus
+- collect logs from moviesservices, moviesbff (lokki?)
+- collect traces from moviesservices, moviesbff (jaeger?)
+- add ingress for prometheus, grafana
+- complete own helm chart
+- add new service with own DB
+- extend bff
 
 # Automated Deployment (WIP)
 # 3.1 Deploy to K8s using HELM
@@ -61,15 +106,6 @@ helm install moviesbff ./helm-charts/movies-bff --namespace local --atomic
 
 helm install moviesfrontend ./helm-charts/movies-frontend --namespace local --atomic
 # helm upgrade moviesfrontend ./helm-charts/movies-frontend --namespace local
-
-# kubectl port-forward service/moviesservice :8080 -n local
-# kubectl port-forward service/moviesbff :8080 -n local
-# kubectl port-forward service/moviesfrontend :8050 -n local
-```
-
-# 4.1 Access the application
-```bash
-# http://moviesfrontend
 ```
 
 # Resources
