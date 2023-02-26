@@ -4,6 +4,8 @@ import com.architecture.movies.core.domain.movies.model.Movie;
 import com.architecture.movies.core.domain.movies.service.MoviesService;
 import com.architecture.movies.core.error.ParametersException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,11 +20,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieController {
 
+    private static final Logger log = LoggerFactory.getLogger(MovieController.class);
+
     private final MoviesService moviesService;
 
     @GetMapping("/populars")
     public ResponseEntity<List<Movie>> getPopulars() {
         final List<Movie> movies = moviesService.getPopulars();
+        log.info("Getting popular movies from backend service-> [{}]", movies.size());
         return ResponseEntity
                 .ok(movies);
     }
@@ -30,6 +35,7 @@ public class MovieController {
     @GetMapping("/upcoming")
     public ResponseEntity<List<Movie>> getUpcoming() {
         final List<Movie> movies = moviesService.getUpcoming();
+        log.info("Getting upcoming movies from backend service-> [{}]", movies.size());
         return ResponseEntity
                 .ok(movies);
     }
