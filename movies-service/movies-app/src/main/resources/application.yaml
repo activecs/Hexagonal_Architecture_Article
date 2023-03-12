@@ -11,7 +11,7 @@ app:
       key: ${TMDB_API_KEY:e47570364cc8ce40dffb5b785097decf}
 logging:
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} ${LOG_LEVEL_PATTERN:-%5p} %m%n"
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 management:
   endpoint:
     health:
@@ -29,3 +29,13 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+  loki:
+    url: ${LOKI_ENDPOINT:http://loki-gateway/loki/api/v1/push}
+  tracing:
+    exporter:
+      jaeger:
+        enabled: true
+        endpoint: ${JAEGER_ENDPOINT:http://jgr-collector:14250}
+        timeout: 10000
+    sampling:
+      probability: 1.0

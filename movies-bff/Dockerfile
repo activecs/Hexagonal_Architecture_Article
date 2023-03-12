@@ -9,6 +9,6 @@ RUN mvn clean package -Dmaven.test.skip=true
 
 FROM amazoncorretto:17-alpine-jdk as production
 VOLUME /tmp
-COPY --from=build /workspace/target/frontend-*.jar app.jar
+COPY --from=build /workspace/target/moviesbff-*.jar app.jar
 EXPOSE 80
 ENTRYPOINT ["java","-jar", "app.jar"]

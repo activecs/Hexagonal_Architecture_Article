@@ -50,6 +50,10 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

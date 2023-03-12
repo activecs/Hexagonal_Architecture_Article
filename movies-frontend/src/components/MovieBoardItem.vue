@@ -3,7 +3,7 @@
     <h2>{{ movie.title }}</h2>
     <p>{{ movie.synopsys }}</p>
     <p>Release date: {{ movie.releaseDate }}</p>
-    <p>Rating: {{ movie.rate }}</p>
+    <p>Rating: {{ movie.rate.value }}</p>
   </div>
 </template>
 

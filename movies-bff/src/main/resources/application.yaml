@@ -1,6 +1,6 @@
 spring:
   application:
-    name: moviesfrontend
+    name: moviesbff
 server:
   port: ${APP_PORT:8080}
 
@@ -25,3 +25,13 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+  loki:
+    url: ${LOKI_ENDPOINT:http://loki-gateway/loki/api/v1/push}
+  tracing:
+    sampling:
+      probability: 1.0
+    exporter:
+      jaeger:
+        enabled: true
+        endpoint: ${JAEGER_ENDPOINT:http://jgr-collector:14250}
+        timeout: 10000

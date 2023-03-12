@@ -3,6 +3,7 @@ package com.architecture.movies.core.expose.api;
 import com.architecture.movies.core.domain.movies.model.Movie;
 import com.architecture.movies.core.domain.movies.service.MoviesService;
 import com.architecture.movies.core.error.ParametersException;
+import io.micrometer.tracing.annotation.NewSpan;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ public class MovieController {
                 .ok(movies);
     }
 
+    @NewSpan("movies.upcoming")
     @GetMapping("/upcoming")
     public ResponseEntity<List<Movie>> getUpcoming() {
         final List<Movie> movies = moviesService.getUpcoming();

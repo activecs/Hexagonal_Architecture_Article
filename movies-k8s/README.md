@@ -79,6 +79,33 @@ Manual steps: (https://brain2life.hashnode.dev/prometheus-and-grafana-setup-in-m
 Create datasource from prometheus-server:8000
 Import 6417 community Dashboard
 ```
+# 2.4 Deploy Jaeger
+```bash
+# Add the jaegertracing Helm repository
+#curl https://raw.githubusercontent.com/jaegertracing/jaeger-operator/main/examples/simplest.yaml | docker run -i --rm jaegertracing/jaeger-operator:master generate | kubectl apply -n jaeger-test -f -
+helm repo add jaegertracing https://jaegertracing.github.io/helm-charts
+helm repo update
+helm install jaeger jaegertracing/jaeger-operator
+helm install jaeger jaegertracing/jaeger
+```
+2.5 Deploy Loki
+```bash
+# Add the grafana Helm repository
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install --values ./helm-charts/chart-loki-values.yaml loki grafana/loki-distributed
+#helm install --values ./helm-charts/chart-loki-values.yaml loki grafana/loki
+#helm upgrade --values ./helm-charts/chart-loki-values.yaml loki grafana/loki
+
+```
+# 2.6 Deploy promtail(optional)
+```bash
+# Add the grafana Helm repository
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install --values ./helm-charts/chart-promtail-values.yaml promtail grafana/promtail 
+``` 
+
 
 # 4.1 Access the application
 ```bash

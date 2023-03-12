@@ -4,6 +4,8 @@ import com.architecture.movies.core.domain.model.MovieFactory;
 import com.architecture.movies.core.domain.movies.error.MoviesNotFoundException;
 import com.architecture.movies.core.domain.movies.model.Movie;
 import com.architecture.movies.core.domain.movies.outbound.MoviesProvider;
+import io.micrometer.tracing.Span;
+import io.micrometer.tracing.Tracer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -15,6 +17,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -22,12 +25,16 @@ class MoviesServiceTest {
 
     @Mock
     private MoviesProvider moviesProvider;
+    @Mock
+    private Tracer tracer;
+    @Mock
+    private Span span;
 
     private MoviesService moviesService;
 
     @BeforeEach
     public void init() {
-        moviesService = new MoviesServiceImpl(moviesProvider);
+        moviesService = new MoviesServiceImpl(moviesProvider, tracer);
     }
 
     @Test
@@ -35,6 +42,8 @@ class MoviesServiceTest {
         // given
         final List<Movie> movies = List.of(MovieFactory.MOVIE_POJO);
         when(moviesProvider.getPopulars()).thenReturn(movies);
+        when(tracer.nextSpan()).thenReturn(span);
+        when(span.name(any(String.class))).thenReturn(span);
         // when
         final List<Movie> result = moviesService.getPopulars();
         // then
@@ -47,6 +56,8 @@ class MoviesServiceTest {
         // given
         final List<Movie> movies = List.of();
         when(moviesProvider.getPopulars()).thenReturn(movies);
+        when(tracer.nextSpan()).thenReturn(span);
+        when(span.name(any(String.class))).thenReturn(span);
         // when - then
         assertThrows(MoviesNotFoundException.class, () -> moviesService.getPopulars());
     }

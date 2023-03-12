@@ -1,0 +1,18 @@
+loki:
+  commonConfig:
+    replication_factor: 1
+  storage:
+    type: 'filesystem'
+singleBinary:
+  replicas: 1
+gateway:
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - host: loki-gateway
+        paths:
+          # New data structure introduced
+          - path: /
+            # Newly added optional property
+            pathType: Prefix
