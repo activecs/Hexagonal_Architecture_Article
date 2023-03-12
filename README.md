@@ -10,6 +10,9 @@
 - spring boot 3 + vue.js
 
 ### Monitoring (wip)
-- grafana + prometheus
+- grafana 
+- prometheus
+- jaeger
+- loki
 
 Installation guide in movies_k8s folder
