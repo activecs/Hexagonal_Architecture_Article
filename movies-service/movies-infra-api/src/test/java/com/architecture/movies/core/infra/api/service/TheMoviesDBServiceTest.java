@@ -60,8 +60,7 @@ class TheMoviesDBServiceTest {
         final MovieDb movieDb = MovieDBFactory.MOVIEDB_POJO;
         final MovieResultsPage movieResultsPage = new MovieResultsPage();
         movieResultsPage.setResults(List.of(movieDb));
-        when(tmdbMovies.getUpcoming("en", 1, "FR"))
-                .thenReturn(movieResultsPage);
+        when(tmdbMovies.getUpcoming("en", 1, "UA")).thenReturn(movieResultsPage);
         // when
         final List<Movie> result = moviesProvider.getUpcoming();
         // then

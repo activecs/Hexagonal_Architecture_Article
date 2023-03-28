@@ -1,5 +1,6 @@
 package com.architecture.movies.core.expose.api;
 
+import com.architecture.movies.core.domain.movies.error.MoviesNotFoundException;
 import com.architecture.movies.core.domain.movies.model.Movie;
 import com.architecture.movies.core.domain.movies.service.MoviesService;
 import com.architecture.movies.core.error.ParametersException;
@@ -9,10 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -50,5 +48,12 @@ public class MovieController {
         final Movie movie = moviesService.getById(id);
         return ResponseEntity
                 .ok(movie);
+    }
+
+    @ExceptionHandler(MoviesNotFoundException.class)
+    public ResponseEntity<String> handleMoviesNotFoundException(MoviesNotFoundException ex) {
+        return ResponseEntity
+                .status(204)
+                .build();
     }
 }

@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.DecimalFormat;
@@ -22,11 +23,14 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
+@ActiveProfiles(profiles = "test")
 @SpringBootTest(classes = {MoviesCoreServiceApplication.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class MovieIntegrationTest {
+class MovieControllerIntegrationTest {
 
     @MockBean
     private TmdbApi tmdbApi;
@@ -104,7 +108,7 @@ class MovieIntegrationTest {
         final MovieResultsPage movieResultsPage = new MovieResultsPage();
         movieResultsPage.setResults(movieDbs);
         when(tmdbApi.getMovies()).thenReturn(tmdbMovies);
-        when(tmdbMovies.getUpcoming("en", 1, "FR")).thenReturn(movieResultsPage);
+        when(tmdbMovies.getUpcoming(eq("en"), eq(1), any(String.class))).thenReturn(movieResultsPage);
         // when
         List<Movie> response = given()
                 .accept("application/json")

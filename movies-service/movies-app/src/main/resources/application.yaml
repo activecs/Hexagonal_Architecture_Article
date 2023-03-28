@@ -3,7 +3,7 @@ spring:
     name: moviesservice
 server:
   servlet:
-    context-path: /api
+    context-path: /api/v1
   port: ${APP_PORT:8888}
 app:
   security:

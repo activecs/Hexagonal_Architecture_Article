@@ -24,10 +24,18 @@
         </format>
     </appender>
 
-    <root level="INFO">
-        <appender-ref ref="LOKI"/>
-        <appender-ref ref="CONSOLE"/>
-    </root>
+    <springProfile name="test">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+    </springProfile>
+    <springProfile name="!test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="LOKI"/>
+        </root>
+    </springProfile>
+
 
     <logger name="org.springframework.web" level="DEBUG"/>
     <logger name="org.springframework.security" level="DEBUG"/>

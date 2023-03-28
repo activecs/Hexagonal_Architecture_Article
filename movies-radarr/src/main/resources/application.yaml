@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: moviesradarr
+server:
+  port: ${APP_PORT:8089}

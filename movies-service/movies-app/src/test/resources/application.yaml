@@ -1,7 +1,6 @@
 server:
   servlet:
-    context-path: /api
-
+    context-path: /api/v1
 app:
   security:
     tmdb:

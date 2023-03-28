@@ -27,7 +27,7 @@ public class TheMoviesDBService implements MoviesProvider {
 
     @Override
     public List<Movie> getUpcoming() {
-        return tmdbApi.getMovies().getUpcoming("en", 1, "FR")
+        return tmdbApi.getMovies().getUpcoming("en", 1, "UA")
                 .getResults()
                 .stream()
                 .map(MovieMapper::toDomain)
